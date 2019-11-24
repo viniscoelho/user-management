@@ -1,0 +1,180 @@
+swagger: "2.0"
+info:
+  version: "2.0.0"
+  title: "Users API"
+schemes:
+  - "http"
+consumes:
+  - "application/json"
+produces:
+  - "application/json"
+paths:
+  /users:
+    get:
+      summary: "Fetches a list of users"
+      description: >-
+        Returns a list having all users registered in the system. Only admis can perform this operation.
+      produces:
+        - "application/json"
+      responses:
+        "200":
+          description: >-
+            A list of users.
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/User"
+        "403":
+          description: >-
+            User does not have the necessary authorization.
+    post:
+      summary: "Creates a new user"
+      description: >-
+        Creates a new user. A user can be either an admin or a regular one.
+      parameters:
+        - name: "user"
+          in: "body"
+          description: "Information about the user to be created."
+          required: true
+          schema:
+            $ref: "#/definitions/NewUser"
+      responses:
+        "201":
+          description: >-
+            User successfully created.
+        "403":
+          description: >-
+            User does not have the necessary authorization. This has priority over 409 -- an unauthorized user will not know if such username exists.
+        "409":
+          description: >-
+            User already exists in the system.
+        "500":
+          description: >-
+            Internal server error while processing the request.
+  /users/{username}:
+    get:
+      summary: "Fetches information about a user"
+      description: >-
+        Returns information about a specific user.
+      produces:
+        - "application/json"
+      parameters:
+        - name: "username"
+          in: "path"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "User info successfully fetched."
+          schema:
+            $ref: "#/definitions/User"
+        "403":
+          description: >-
+            User does not have the necessary authorization. This has priority over 404 -- an unauthorized user will not know if such username exists.
+        "404":
+          description: "User does not exist."
+        "500":
+          description: "Internal server error while processing the request."
+    delete:
+      summary: "Deletes a user from the system"
+      description: >-
+        Delete a user from the system. Only admins can delete other users.
+      parameters:
+        - name: "username"
+          in: "path"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "User successfully deleted."
+        "403":
+          description: >-
+            User does not have the necessary authorization. This has priority over 404 -- an unauthorized user will not know if such username exists.
+        "404":
+          description: "User does not exist."
+        "500":
+          description: "Internal server error while processing the request."
+    patch:
+      summary: "Updates a user information"
+      description: >-
+        Replaces information for the user with the given username. Users cannot update their usernames. Regular users cannot update their role.
+      parameters:
+        - name: "username"
+          in: "path"
+          required: true
+          type: "string"
+        - name: "newInfo"
+          in: "body"
+          description: >-
+            Information to be replaced. This information can be sent with missing fields fields.
+          required: true
+          schema:
+            $ref: "#/definitions/UserUpdate"
+      responses:
+        "200":
+          description: "User info successfully updated."
+        "400":
+          description: >-
+            Invalid new password.
+        "403":
+          description: >-
+            User does not have the necessary authorization. This has priority over 404 -- an unauthorized user will not know if such username exists.
+        "404":
+          description: "User does not exist."
+        "500":
+          description: "Internal server error while processing the request."
+definitions:
+  User:
+    type: "object"
+    required:
+      - "username"
+      - "role"
+    properties:
+      username:
+        type: "string"
+        description: >-
+          "Note: usernames are case sensitive."
+      role:
+        type: "string"
+        enum:
+          - "admin"
+          - "regular"
+    example:
+      username: "vinicius"
+      role: "admin"
+  NewUser:
+    type: "object"
+    required:
+      - "username"
+      - "password"
+      - "role"
+    properties:
+      username:
+        type: "string"
+      password:
+        type: "string"
+      role:
+        type: "string"
+        enum:
+          - "admin"
+          - "regular"
+    example:
+      username: "vinicius"
+      password: "P4ssw0rd"
+      role: "admin"
+  UserUpdate:
+    type: "object"
+    properties:
+      username:
+        type: "string"
+      password:
+        type: "string"
+      role:
+        type: "string"
+        enum:
+          - "admin"
+          - "regular"
+    example:
+      username: "vinicius"
+      password: "N3wP4ssw0rd"
+      role: "admin"
