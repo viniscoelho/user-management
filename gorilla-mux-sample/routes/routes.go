@@ -3,32 +3,34 @@ package routes
 import (
 	"net/http"
 
+	users "user-management/mockgen-sample"
+
 	"github.com/gorilla/mux"
 )
 
-func CreateRoutes() *mux.Router {
+func CreateRoutes(um users.Users) *mux.Router {
 	r := mux.NewRouter()
 
 	r.Path("/users").
 		Methods(http.MethodGet).
 		Name("ListUsers").
-		Handler(ListUsersHandler{})
+		Handler(ListUsersHandler{um})
 	r.Path("/users").
 		Methods(http.MethodPost).
 		Name("CreateUser").
-		Handler(CreateUserHandler{})
+		Handler(CreateUserHandler{um})
 	r.Path("/users/{username}").
 		Methods(http.MethodGet).
 		Name("ReadUser").
-		Handler(ReadUserHandler{})
+		Handler(ReadUserHandler{um})
 	r.Path("/users/{username}").
 		Methods(http.MethodPatch).
 		Name("UpdateUser").
-		Handler(UpdateUserHandler{})
+		Handler(UpdateUserHandler{um})
 	r.Path("/users/{username}").
 		Methods(http.MethodDelete).
 		Name("DeleteUser").
-		Handler(DeleteUserHandler{})
+		Handler(DeleteUserHandler{um})
 
 	return r
 }

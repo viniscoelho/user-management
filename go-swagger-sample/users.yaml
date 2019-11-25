@@ -85,7 +85,7 @@ paths:
           required: true
           type: "string"
       responses:
-        "200":
+        "204":
           description: "User successfully deleted."
         "403":
           description: >-

@@ -1,11 +1,5 @@
-//go:generate mockgen -destination=mocks/mocks.go -package=mocks tdc-presentation/mockgen-sample Users
+//go:generate mockgen -destination=mocks/mocks.go -package=mocks user-management/mockgen-sample Users
 package mockgen_sample
-
-type user struct {
-	username string
-	password string
-	role     string
-}
 
 type UserDTO struct {
 	Username string `json:"username"`
@@ -19,9 +13,9 @@ type User interface {
 }
 
 type Users interface {
-	ListUsers() ([]Users, error)
+	ListUsers() ([]User, error)
 	CreateUser(u User) error
-	ReadUser() (User, error)
+	ReadUser(username string) (User, error)
 	UpdateUser(u User) error
 	DeleteUser(username string) error
 }

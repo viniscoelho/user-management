@@ -6,11 +6,14 @@ import (
 	"time"
 
 	"user-management/gorilla-mux-sample/routes"
+	users "user-management/mockgen-sample"
 )
 
 func main() {
+	um := users.NewUserManagement()
+
 	s := &http.Server{
-		Handler:      routes.CreateRoutes(),
+		Handler:      routes.CreateRoutes(um),
 		ReadTimeout:  0,
 		WriteTimeout: 0,
 		Addr:         ":3000",
