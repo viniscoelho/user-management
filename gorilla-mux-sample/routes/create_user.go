@@ -38,7 +38,14 @@ func (h CreateUserHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newUser := users.NewUserFromDTO(newUserDTO)
+	newUser, err := users.NewUserFromDTO(newUserDTO)
+	if err != nil {
+		log.Printf("Error: %s", err)
+		rw.WriteHeader(http.StatusInternalServerError)
+		rw.Write([]byte("internal server error"))
+		return
+	}
+
 	err = h.um.CreateUser(newUser)
 	if err != nil {
 		log.Printf("Error: %s", err)
