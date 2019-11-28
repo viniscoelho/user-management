@@ -6,20 +6,22 @@ type user struct {
 	role     string
 }
 
-func NewUser(username, password, role string) *user {
-	return &user{
+func NewUser(username, password, role string) (*user, error) {
+	u := user{
 		username: username,
 		password: password,
 		role:     role,
 	}
+
+	if err := u.validateUser(); err != nil {
+		return nil, err
+	}
+
+	return &u, nil
 }
 
-func NewUserFromDTO(dto UserDTO) *user {
-	return &user{
-		username: dto.Username,
-		password: dto.Password,
-		role:     dto.Role,
-	}
+func NewUserFromDTO(dto UserDTO) (*user, error) {
+	return NewUser(dto.Username, dto.Password, dto.Role)
 }
 
 func (u user) Username() string {
@@ -35,5 +37,21 @@ func (u *user) ChangePassword(pw string) error {
 		return &InvalidPasswordError{}
 	}
 	u.password = pw
+	return nil
+}
+
+func (u user) validateUser() error {
+	if len(u.username) == 0 {
+		return InvalidUsernameError{}
+	}
+
+	if len(u.password) < 8 {
+		return InvalidPasswordError{}
+	}
+
+	if u.role != "admin" && u.role != "member" {
+		return InvalidRoleError{}
+	}
+
 	return nil
 }
