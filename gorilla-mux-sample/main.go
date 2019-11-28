@@ -10,7 +10,10 @@ import (
 )
 
 func main() {
-	um := users.NewUserManagement()
+	um, err := users.NewUserManagement()
+	if err != nil {
+		log.Fatal("could not initialize storage")
+	}
 
 	s := &http.Server{
 		Handler:      routes.CreateRoutes(um),

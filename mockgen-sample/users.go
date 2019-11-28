@@ -4,17 +4,28 @@ type userManagement struct {
 	storage map[string]User
 }
 
-func NewUserManagement() *userManagement {
+func NewUserManagement() (*userManagement, error) {
 	um := &userManagement{
 		storage: make(map[string]User, 0),
 	}
-	um.initializeUserManagement()
-	return um
+
+	err := um.initializeUserManagement()
+	if err != nil {
+		return nil, err
+	}
+
+	return um, nil
 }
 
-func (um *userManagement) initializeUserManagement() {
+func (um *userManagement) initializeUserManagement() error {
 	// this is "super safe" too
-	um.storage["admin"] = NewUser("admin", "secretPass", "admin")
+	u, err := NewUser("admin", "secretPass", "admin")
+	if err != nil {
+		return err
+	}
+
+	um.storage["admin"] = u
+	return nil
 }
 
 func (um userManagement) ListUsers() ([]User, error) {
