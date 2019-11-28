@@ -1,7 +1,5 @@
 package mockgen_sample
 
-import "encoding/json"
-
 type user struct {
 	username string
 	password string
@@ -13,6 +11,14 @@ func NewUser(username, password, role string) *user {
 		username: username,
 		password: password,
 		role:     role,
+	}
+}
+
+func NewUserFromDTO(dto UserDTO) *user {
+	return &user{
+		username: dto.Username,
+		password: dto.Password,
+		role:     dto.Role,
 	}
 }
 
@@ -30,12 +36,4 @@ func (u *user) ChangePassword(pw string) error {
 	}
 	u.password = pw
 	return nil
-}
-
-func (u user) MarshalJSON() ([]byte, error) {
-	dto := UserDTO{
-		Username: u.Username(),
-		Role:     u.Role(),
-	}
-	return json.Marshal(dto)
 }
