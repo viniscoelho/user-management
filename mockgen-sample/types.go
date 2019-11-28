@@ -1,5 +1,7 @@
-//go:generate mockgen -destination=mocks/mocks.go -package=mocks user-management/mockgen-sample Users
+//go:generate mockgen -destination=mocks/mocks.go -package=mocks user-management/mockgen-sample User,Users
 package mockgen_sample
+
+import "encoding/json"
 
 type UserDTO struct {
 	Username string `json:"username"`
@@ -10,6 +12,7 @@ type User interface {
 	Username() string
 	Role() string
 	ChangePassword(pw string) error
+	json.Marshaler
 }
 
 type Users interface {

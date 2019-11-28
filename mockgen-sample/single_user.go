@@ -1,5 +1,7 @@
 package mockgen_sample
 
+import "encoding/json"
+
 type user struct {
 	username string
 	password string
@@ -28,4 +30,12 @@ func (u *user) ChangePassword(pw string) error {
 	}
 	u.password = pw
 	return nil
+}
+
+func (u user) MarshalJSON() ([]byte, error) {
+	dto := UserDTO{
+		Username: u.Username(),
+		Role:     u.Role(),
+	}
+	return json.Marshal(dto)
 }
