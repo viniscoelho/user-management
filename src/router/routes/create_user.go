@@ -5,11 +5,12 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	users "user-management/mockgen-sample"
+	"user-management/src/types"
+	"user-management/src/types/userstore"
 )
 
 type CreateUserHandler struct {
-	um users.Users
+	um types.Users
 }
 
 func (h CreateUserHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
@@ -37,7 +38,7 @@ func (h CreateUserHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newUserDTO := users.UserDTO{}
+	newUserDTO := types.UserDTO{}
 	err = json.Unmarshal(body, &newUserDTO)
 	if err != nil {
 		log.Printf("Error: %s", err)
@@ -46,12 +47,12 @@ func (h CreateUserHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newUser, err := users.NewUserFromDTO(newUserDTO)
+	newUser, err := userstore.NewUserFromDTO(newUserDTO)
 	if err != nil {
 		log.Printf("Error: %s", err)
 
 		switch err.(type) {
-		case users.InvalidPasswordError, users.InvalidUsernameError, users.InvalidRoleError:
+		case userstore.InvalidPasswordError, userstore.InvalidUsernameError, userstore.InvalidRoleError:
 			rw.WriteHeader(http.StatusBadRequest)
 			message := "invalid fields: username should have at least one character, " +
 				"password should contain at least 8 characters and role must be either admin or regular"
@@ -69,7 +70,7 @@ func (h CreateUserHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 		log.Printf("Error: %s", err)
 
 		switch err.(type) {
-		case users.UserAlreadyExistsError:
+		case userstore.UserAlreadyExistsError:
 			rw.WriteHeader(http.StatusConflict)
 			rw.Write([]byte("username already taken"))
 		default:
@@ -83,6 +84,6 @@ func (h CreateUserHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	rw.WriteHeader(http.StatusCreated)
 }
 
-func (h CreateUserHandler) isAllowed(u users.User) bool {
+func (h CreateUserHandler) isAllowed(u types.User) bool {
 	return u.Role() == "admin"
 }

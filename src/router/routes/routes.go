@@ -2,15 +2,14 @@ package routes
 
 import (
 	"net/http"
-
-	users "user-management/mockgen-sample"
+	"user-management/src/types"
 
 	"github.com/gorilla/mux"
 )
 
 const usernameRouteVar = "username"
 
-func CreateRoutes(um users.Users) *mux.Router {
+func CreateRoutes(um types.Users) *mux.Router {
 	r := mux.NewRouter()
 
 	r.Path("/users").

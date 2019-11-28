@@ -4,13 +4,12 @@ import (
 	"log"
 	"net/http"
 	"time"
-
-	"user-management/gorilla-mux-sample/routes"
-	users "user-management/mockgen-sample"
+	"user-management/src/router/routes"
+	"user-management/src/types/userstore"
 )
 
 func main() {
-	um, err := users.NewUserManagement()
+	um, err := userstore.NewUserManagement()
 	if err != nil {
 		log.Fatal("could not initialize storage")
 	}

@@ -1,4 +1,4 @@
-package mockgen_sample
+package userstore
 
 type EmptyStorageError struct{}
 

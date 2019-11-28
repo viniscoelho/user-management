@@ -4,17 +4,17 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	users "user-management/mockgen-sample"
+	"user-management/src/types"
 
 	"github.com/gorilla/mux"
 )
 
 type ReadUserHandler struct {
-	um users.Users
+	um types.Users
 }
 
-func serializeUser(u users.User) ([]byte, error) {
-	dto := users.UserDTO{
+func serializeUser(u types.User) ([]byte, error) {
+	dto := types.UserDTO{
 		Username: u.Username(),
 		Role:     u.Role(),
 	}
@@ -61,6 +61,6 @@ func (h ReadUserHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	rw.Write(content)
 }
 
-func (h ReadUserHandler) isAllowed(u users.User, targetUsername string) bool {
+func (h ReadUserHandler) isAllowed(u types.User, targetUsername string) bool {
 	return u.Role() == "admin" || u.Username() == targetUsername
 }

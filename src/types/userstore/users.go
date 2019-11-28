@@ -1,12 +1,14 @@
-package mockgen_sample
+package userstore
+
+import "user-management/src/types"
 
 type userManagement struct {
-	storage map[string]User
+	storage map[string]types.User
 }
 
 func NewUserManagement() (*userManagement, error) {
 	um := &userManagement{
-		storage: make(map[string]User, 0),
+		storage: make(map[string]types.User, 0),
 	}
 
 	err := um.initializeUserManagement()
@@ -28,12 +30,12 @@ func (um *userManagement) initializeUserManagement() error {
 	return nil
 }
 
-func (um userManagement) ListUsers() ([]User, error) {
+func (um userManagement) ListUsers() ([]types.User, error) {
 	if len(um.storage) == 0 {
 		return nil, EmptyStorageError{}
 	}
 
-	ul := make([]User, 0)
+	ul := make([]types.User, 0)
 	for _, cur := range um.storage {
 		ul = append(ul, cur)
 	}
@@ -41,7 +43,7 @@ func (um userManagement) ListUsers() ([]User, error) {
 	return ul, nil
 }
 
-func (um *userManagement) CreateUser(u User) error {
+func (um *userManagement) CreateUser(u types.User) error {
 	if _, ok := um.storage[u.Username()]; ok {
 		return UserAlreadyExistsError{}
 	}
@@ -50,7 +52,7 @@ func (um *userManagement) CreateUser(u User) error {
 	return nil
 }
 
-func (um userManagement) ReadUser(username string) (User, error) {
+func (um userManagement) ReadUser(username string) (types.User, error) {
 	if _, ok := um.storage[username]; !ok {
 		return nil, UserDoesNotExistError{}
 	}
@@ -59,7 +61,7 @@ func (um userManagement) ReadUser(username string) (User, error) {
 	return u, nil
 }
 
-func (um *userManagement) UpdateUser(u User) error {
+func (um *userManagement) UpdateUser(u types.User) error {
 	if _, ok := um.storage[u.Username()]; !ok {
 		return UserDoesNotExistError{}
 	}

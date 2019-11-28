@@ -4,11 +4,11 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	users "user-management/mockgen-sample"
+	"user-management/src/types"
 )
 
 type ListUsersHandler struct {
-	um users.Users
+	um types.Users
 }
 
 func (h ListUsersHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
@@ -48,15 +48,15 @@ func (h ListUsersHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	rw.Write(content)
 }
 
-func (h ListUsersHandler) isAllowed(u users.User) bool {
+func (h ListUsersHandler) isAllowed(u types.User) bool {
 	return u.Role() == "admin"
 }
 
-func serializeUsers(userList []users.User) ([]byte, error) {
-	dtoList := make([]users.UserDTO, 0)
+func serializeUsers(userList []types.User) ([]byte, error) {
+	dtoList := make([]types.UserDTO, 0)
 
 	for _, u := range userList {
-		dtoList = append(dtoList, users.UserDTO{
+		dtoList = append(dtoList, types.UserDTO{
 			Username: u.Username(),
 			Role:     u.Role(),
 		})

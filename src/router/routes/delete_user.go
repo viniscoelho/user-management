@@ -3,13 +3,14 @@ package routes
 import (
 	"log"
 	"net/http"
-	users "user-management/mockgen-sample"
+	"user-management/src/types"
+	"user-management/src/types/userstore"
 
 	"github.com/gorilla/mux"
 )
 
 type DeleteUserHandler struct {
-	um users.Users
+	um types.Users
 }
 
 func (h DeleteUserHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
@@ -37,7 +38,7 @@ func (h DeleteUserHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 		log.Printf("Error: %s", err)
 
 		switch err.(type) {
-		case users.UserDoesNotExistError:
+		case userstore.UserDoesNotExistError:
 			rw.WriteHeader(http.StatusNotFound)
 			rw.Write([]byte("user does not exist"))
 		default:
@@ -51,6 +52,6 @@ func (h DeleteUserHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	rw.WriteHeader(http.StatusNoContent)
 }
 
-func (h DeleteUserHandler) isAllowed(u users.User, targetUsername string) bool {
+func (h DeleteUserHandler) isAllowed(u types.User, targetUsername string) bool {
 	return u.Username() != targetUsername && u.Role() == "admin"
 }

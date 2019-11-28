@@ -1,4 +1,6 @@
-package mockgen_sample
+package userstore
+
+import "user-management/src/types"
 
 type user struct {
 	username string
@@ -20,7 +22,7 @@ func NewUser(username, password, role string) (*user, error) {
 	return &u, nil
 }
 
-func NewUserFromDTO(dto UserDTO) (*user, error) {
+func NewUserFromDTO(dto types.UserDTO) (*user, error) {
 	return NewUser(dto.Username, dto.Password, dto.Role)
 }
 

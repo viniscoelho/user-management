@@ -5,13 +5,14 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	users "user-management/mockgen-sample"
+	"user-management/src/types"
+	"user-management/src/types/userstore"
 
 	"github.com/gorilla/mux"
 )
 
 type UpdateUserHandler struct {
-	um users.Users
+	um types.Users
 }
 
 func (h UpdateUserHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
@@ -42,7 +43,7 @@ func (h UpdateUserHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newUserDTO := users.UserDTO{}
+	newUserDTO := types.UserDTO{}
 	err = json.Unmarshal(body, &newUserDTO)
 	if err != nil {
 		log.Printf("Error: %s", err)
@@ -51,12 +52,12 @@ func (h UpdateUserHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newUser, err := users.NewUserFromDTO(newUserDTO)
+	newUser, err := userstore.NewUserFromDTO(newUserDTO)
 	if err != nil {
 		log.Printf("Error: %s", err)
 
 		switch err.(type) {
-		case users.InvalidPasswordError:
+		case userstore.InvalidPasswordError:
 			rw.WriteHeader(http.StatusBadRequest)
 			rw.Write([]byte("invalid password: it should contain at least 8 characters"))
 		default:
@@ -72,7 +73,7 @@ func (h UpdateUserHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 		log.Printf("Error: %s", err)
 
 		switch err.(type) {
-		case users.UserDoesNotExistError:
+		case userstore.UserDoesNotExistError:
 			rw.WriteHeader(http.StatusNotFound)
 			rw.Write([]byte("username does not exist"))
 		default:
@@ -84,6 +85,6 @@ func (h UpdateUserHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h UpdateUserHandler) isAllowed(u users.User, targetUsername string) bool {
+func (h UpdateUserHandler) isAllowed(u types.User, targetUsername string) bool {
 	return u.Role() == "admin" || u.Username() == targetUsername
 }

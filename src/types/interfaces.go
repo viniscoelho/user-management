@@ -1,5 +1,5 @@
-//go:generate mockgen -destination=mocks/mocks.go -package=mocks user-management/mockgen-sample User,Users
-package mockgen_sample
+//go:generate mockgen -destination=mocks/mocks.go -package=mocks user-management/src/types User,Users
+package types
 
 type UserDTO struct {
 	Username string `json:"username"`
