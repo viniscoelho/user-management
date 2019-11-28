@@ -8,10 +8,16 @@ func NewUserManagement() *userManagement {
 	um := &userManagement{
 		storage: make(map[string]User, 0),
 	}
+	um.initializeUserManagement()
 	return um
 }
 
-func (um *userManagement) ListUsers() ([]User, error) {
+func (um *userManagement) initializeUserManagement() {
+	// this is "super safe" too
+	um.storage["admin"] = NewUser("admin", "secretPass", "admin")
+}
+
+func (um userManagement) ListUsers() ([]User, error) {
 	if len(um.storage) == 0 {
 		return nil, EmptyStorageError{}
 	}
@@ -33,7 +39,7 @@ func (um *userManagement) CreateUser(u User) error {
 	return nil
 }
 
-func (um *userManagement) ReadUser(username string) (User, error) {
+func (um userManagement) ReadUser(username string) (User, error) {
 	if _, ok := um.storage[username]; !ok {
 		return nil, UserDoesNotExistError{}
 	}
