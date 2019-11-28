@@ -13,11 +13,19 @@ type CreateUserHandler struct {
 }
 
 func (h CreateUserHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
-	auth := r.Header.Get("Authorization")
-	if auth != authorizationHeaderToken {
+	requesterName := r.Header.Get("Authorization")
+	if len(requesterName) == 0 {
 		log.Printf("Unauthorized request to resource: missing authorization header")
 		rw.WriteHeader(http.StatusUnauthorized)
 		rw.Write([]byte("unauthorized"))
+		return
+	}
+
+	requester, err := h.um.ReadUser(requesterName)
+	if err != nil || !h.isAllowed(requester) {
+		log.Printf("Insufficient authorization for this operation")
+		rw.WriteHeader(http.StatusForbidden)
+		rw.Write([]byte("forbidden"))
 		return
 	}
 
@@ -73,4 +81,8 @@ func (h CreateUserHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	rw.WriteHeader(http.StatusCreated)
+}
+
+func (h CreateUserHandler) isAllowed(u users.User) bool {
+	return u.Role() == "admin"
 }

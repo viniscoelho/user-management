@@ -6,6 +6,8 @@ import (
 	"log"
 	"net/http"
 	users "user-management/mockgen-sample"
+
+	"github.com/gorilla/mux"
 )
 
 type UpdateUserHandler struct {
@@ -13,11 +15,22 @@ type UpdateUserHandler struct {
 }
 
 func (h UpdateUserHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
-	auth := r.Header.Get("Authorization")
-	if auth != authorizationHeaderToken {
+	requesterName := r.Header.Get("Authorization")
+	if len(requesterName) == 0 {
 		log.Printf("Unauthorized request to resource: missing authorization header")
 		rw.WriteHeader(http.StatusUnauthorized)
 		rw.Write([]byte("unauthorized"))
+		return
+	}
+
+	vars := mux.Vars(r)
+	targetUsername := vars[usernameRouteVar]
+
+	requester, err := h.um.ReadUser(requesterName)
+	if err != nil || !h.isAllowed(requester, targetUsername) {
+		log.Printf("Insufficient authorization for this operation")
+		rw.WriteHeader(http.StatusForbidden)
+		rw.Write([]byte("forbidden"))
 		return
 	}
 
@@ -69,4 +82,8 @@ func (h UpdateUserHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 
 		return
 	}
+}
+
+func (h UpdateUserHandler) isAllowed(u users.User, targetUsername string) bool {
+	return u.Role() == "admin" || u.Username() == targetUsername
 }

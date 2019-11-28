@@ -9,8 +9,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-const resourceName = "username"
-
 type ReadUserHandler struct {
 	um users.Users
 }
@@ -24,8 +22,8 @@ func serializeUser(u users.User) ([]byte, error) {
 }
 
 func (h ReadUserHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
-	auth := r.Header.Get("Authorization")
-	if auth != authorizationHeaderToken {
+	requesterName := r.Header.Get("Authorization")
+	if len(requesterName) == 0 {
 		log.Printf("Unauthorized request to resource: missing authorization header")
 		rw.WriteHeader(http.StatusUnauthorized)
 		rw.Write([]byte("unauthorized"))
@@ -33,8 +31,17 @@ func (h ReadUserHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	vars := mux.Vars(r)
-	username := vars[resourceName]
-	u, err := h.um.ReadUser(username)
+	targetUsername := vars[usernameRouteVar]
+
+	requester, err := h.um.ReadUser(requesterName)
+	if err != nil || !h.isAllowed(requester, targetUsername) {
+		log.Printf("Insufficient authorization for this operation")
+		rw.WriteHeader(http.StatusForbidden)
+		rw.Write([]byte("forbidden"))
+		return
+	}
+
+	u, err := h.um.ReadUser(targetUsername)
 	if err != nil {
 		log.Printf("Error: %s", err)
 		rw.WriteHeader(http.StatusInternalServerError)
@@ -52,4 +59,8 @@ func (h ReadUserHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 
 	rw.Header().Set("Content-Type", "application/json")
 	rw.Write(content)
+}
+
+func (h ReadUserHandler) isAllowed(u users.User, targetUsername string) bool {
+	return u.Role() == "admin" || u.Username() == targetUsername
 }

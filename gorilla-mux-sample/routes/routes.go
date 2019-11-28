@@ -8,6 +8,8 @@ import (
 	"github.com/gorilla/mux"
 )
 
+const usernameRouteVar = "username"
+
 func CreateRoutes(um users.Users) *mux.Router {
 	r := mux.NewRouter()
 
