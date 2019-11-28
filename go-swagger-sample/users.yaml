@@ -13,7 +13,7 @@ paths:
     get:
       summary: "Fetches a list of users"
       description: >-
-        Returns a list having all users registered in the system. Only admis can perform this operation.
+        Returns a list having all users registered in the system. Only admins can perform this operation.
       produces:
         - "application/json"
       responses:
@@ -33,7 +33,7 @@ paths:
     post:
       summary: "Creates a new user"
       description: >-
-        Creates a new user. A user can be either an admin or a regular one.
+        Creates a new user. A user can be either admin or regular.
       parameters:
         - name: "user"
           in: "body"
