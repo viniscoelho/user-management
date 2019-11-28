@@ -41,8 +41,18 @@ func (h CreateUserHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	newUser, err := users.NewUserFromDTO(newUserDTO)
 	if err != nil {
 		log.Printf("Error: %s", err)
-		rw.WriteHeader(http.StatusInternalServerError)
-		rw.Write([]byte("internal server error"))
+
+		switch err.(type) {
+		case users.InvalidPasswordError, users.InvalidUsernameError, users.InvalidRoleError:
+			rw.WriteHeader(http.StatusBadRequest)
+			message := "invalid fields: username should have at least one character, " +
+				"password should contain at least 8 characters and role must be either admin or regular"
+			rw.Write([]byte(message))
+		default:
+			rw.WriteHeader(http.StatusInternalServerError)
+			rw.Write([]byte("internal server error"))
+		}
+
 		return
 	}
 

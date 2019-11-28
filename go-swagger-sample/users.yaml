@@ -24,6 +24,9 @@ paths:
             type: "array"
             items:
               $ref: "#/definitions/User"
+        "400":
+          description: >-
+            One or more fields do not meet the requirements.
         "403":
           description: >-
             User does not have the necessary authorization.
