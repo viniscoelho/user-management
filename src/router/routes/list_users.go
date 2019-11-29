@@ -7,11 +7,15 @@ import (
 	"user-management/src/types"
 )
 
-type ListUsersHandler struct {
+type listUsers struct {
 	um types.Users
 }
 
-func (h ListUsersHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
+func NewListUsersHandler(um types.Users) *listUsers {
+	return &listUsers{um}
+}
+
+func (h listUsers) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	requesterName := r.Header.Get("Authorization")
 	if len(requesterName) == 0 {
 		log.Printf("Unauthorized request to resource: missing authorization header")
@@ -48,7 +52,7 @@ func (h ListUsersHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	rw.Write(content)
 }
 
-func (h ListUsersHandler) isAllowed(u types.User) bool {
+func (h listUsers) isAllowed(u types.User) bool {
 	return u.Role() == "admin"
 }
 

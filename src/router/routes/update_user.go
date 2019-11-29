@@ -11,11 +11,15 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type UpdateUserHandler struct {
+type updateUser struct {
 	um types.Users
 }
 
-func (h UpdateUserHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
+func NewUpdateUserHandler(um types.Users) *updateUser {
+	return &updateUser{um}
+}
+
+func (h updateUser) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	requesterName := r.Header.Get("Authorization")
 	if len(requesterName) == 0 {
 		log.Printf("Unauthorized request to resource: missing authorization header")
@@ -85,6 +89,6 @@ func (h UpdateUserHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h UpdateUserHandler) isAllowed(u types.User, targetUsername string) bool {
+func (h updateUser) isAllowed(u types.User, targetUsername string) bool {
 	return u.Role() == "admin" || u.Username() == targetUsername
 }

@@ -9,11 +9,17 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type DeleteUserHandler struct {
+const usernameRouteVar = "username"
+
+type deleteUser struct {
 	um types.Users
 }
 
-func (h DeleteUserHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
+func NewDeleteUserHandler(um types.Users) *deleteUser {
+	return &deleteUser{um}
+}
+
+func (h deleteUser) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	requesterName := r.Header.Get("Authorization")
 	if len(requesterName) == 0 {
 		log.Printf("Unauthorized request to resource: missing authorization header")
@@ -52,6 +58,6 @@ func (h DeleteUserHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	rw.WriteHeader(http.StatusNoContent)
 }
 
-func (h DeleteUserHandler) isAllowed(u types.User, targetUsername string) bool {
+func (h deleteUser) isAllowed(u types.User, targetUsername string) bool {
 	return u.Username() != targetUsername && u.Role() == "admin"
 }

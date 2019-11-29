@@ -9,11 +9,15 @@ import (
 	"user-management/src/types/userstore"
 )
 
-type CreateUserHandler struct {
+type createUser struct {
 	um types.Users
 }
 
-func (h CreateUserHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
+func NewCreateUserHandler(um types.Users) *createUser {
+	return &createUser{um}
+}
+
+func (h createUser) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	requesterName := r.Header.Get("Authorization")
 	if len(requesterName) == 0 {
 		log.Printf("Unauthorized request to resource: missing authorization header")
@@ -84,6 +88,6 @@ func (h CreateUserHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	rw.WriteHeader(http.StatusCreated)
 }
 
-func (h CreateUserHandler) isAllowed(u types.User) bool {
+func (h createUser) isAllowed(u types.User) bool {
 	return u.Role() == "admin"
 }

@@ -9,8 +9,12 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type ReadUserHandler struct {
+type readUser struct {
 	um types.Users
+}
+
+func NewReadUserHandler(um types.Users) *readUser {
+	return &readUser{um}
 }
 
 func serializeUser(u types.User) ([]byte, error) {
@@ -21,7 +25,7 @@ func serializeUser(u types.User) ([]byte, error) {
 	return json.Marshal(dto)
 }
 
-func (h ReadUserHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
+func (h readUser) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	requesterName := r.Header.Get("Authorization")
 	if len(requesterName) == 0 {
 		log.Printf("Unauthorized request to resource: missing authorization header")
@@ -61,6 +65,6 @@ func (h ReadUserHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	rw.Write(content)
 }
 
-func (h ReadUserHandler) isAllowed(u types.User, targetUsername string) bool {
+func (h readUser) isAllowed(u types.User, targetUsername string) bool {
 	return u.Role() == "admin" || u.Username() == targetUsername
 }

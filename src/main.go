@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 	"time"
-	"user-management/src/router/routes"
+	"user-management/src/router"
 	"user-management/src/types/userstore"
 )
 
@@ -15,7 +15,7 @@ func main() {
 	}
 
 	s := &http.Server{
-		Handler:      routes.CreateRoutes(um),
+		Handler:      router.CreateRoutes(um),
 		ReadTimeout:  0,
 		WriteTimeout: 0,
 		Addr:         ":3000",
