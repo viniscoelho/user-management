@@ -2,6 +2,7 @@ package router
 
 import (
 	"net/http"
+
 	"user-management/src/router/routes"
 	"user-management/src/types"
 

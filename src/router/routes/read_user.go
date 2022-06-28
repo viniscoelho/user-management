@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+
 	"user-management/src/types"
 
 	"github.com/gorilla/mux"

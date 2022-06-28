@@ -3,6 +3,7 @@ package routes
 import (
 	"log"
 	"net/http"
+
 	"user-management/src/types"
 	"user-management/src/types/userstore"
 
